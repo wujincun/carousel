@@ -35,6 +35,7 @@
 
                     this.index = this.option.index;
                     this.timer = null;
+                    this.done = false;
                 },
                 render: function () {
                     var _this = this;
@@ -62,9 +63,10 @@
                         this.imgsWrap.css({'width': this.imgs.outerWidth() * len + 'px'});
                     }
                     //
-                    timer = setInterval(function () {
-                        _this.move()
-                    }, 1000)
+                    timer = setInterval(
+                        function () {//不可以直接用timer = setInterval(_this.move，2000），那样的话move函数的this指向为window
+                            _this.move()
+                        }, 2000)
                 },
                 bind: function () {
                     var _this = this;
@@ -87,7 +89,10 @@
                 },
                 move: function () {
                     var n = this.option.direction * 1;
-                    this.index++;
+                   /* if(this.done){
+                        this.index++;
+                        this.done = false
+                    }*/
                     var len = this.imgs.length;
                     if (this.index >= len - 1) {
                         this.dots.eq(0).addClass('active').siblings().removeClass('active');
@@ -101,8 +106,11 @@
                     }
                 },
                 animate:function (n) {
+                    var _this = this;
                     this.dots.eq(this.index).addClass('active').siblings().removeClass('active');
-                    this.imgsWrap.stop().animate({'left': n * this.index * this.imgW + 'px'}, 1000);
+                    this.imgsWrap.stop().animate({'left': n * this.index * this.imgW + 'px'}, 1000,function () {
+                        _this.done = true
+                    });
                 }
 
             });
