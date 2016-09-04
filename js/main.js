@@ -96,7 +96,6 @@
                 },
                 //移动边界处理
                 move:function (n) {
-                    var _this = this;
                     var len = this.imgs.length;
                     if (this.index >= len - 1) {
                         this.dots.eq(0).addClass('active').siblings().removeClass('active');
@@ -122,8 +121,6 @@
                     this.dots.eq(this.index).addClass('active').siblings().removeClass('active');
                     this.imgsWrap.stop().animate({'left':  - this.index * this.imgW + 'px'}, this.option.animateTime);
                 }
-
-
             });
             return new CarouselObj(option);
         }
