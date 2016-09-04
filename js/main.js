@@ -20,8 +20,9 @@
                         toLeftBtn: $('.left_btn'),
                         toRightBtn: $('.right_btn'),
                         hasNoGap: true,
-                        direction: -1,
-                        interval: 2000
+                        direction: 1,
+                        interval: 2000,
+                        animateTime: 1000
                     };
                     this.option = $.extend(opt, option);
                     //dom元素
@@ -62,54 +63,66 @@
                         len = this.imgs.length;
                         this.imgsWrap.css({'width': this.imgs.outerWidth() * len + 'px'});
                     }
-                    //
                     timer = setInterval(
                         function () {//不可以直接用timer = setInterval(_this.move，2000），那样的话move函数的this指向为window
-                            _this.move()
-                        }, 2000)
+                            _this.toMove(_this.option.direction * 1)
+                        }, _this.option.interval)
                 },
                 bind: function () {
                     var _this = this;
                     this.toLeftBtn.on('click', function () {
-                        _this.index --;
-                        var n = -1;
-                        _this.dots.eq(_this.index).addClass('active').siblings().removeClass('active');
-                        _this.imgsWrap.stop().animate({'left': n * _this.index * _this.imgW + 'px'}, 1000)
+                        _this.toMove(1)
                     });
                     this.toRightBtn.on('click', function () {
-
+                        _this.toMove(-1)
                     });
                     this.stage.mouseenter(function () {
                         clearInterval(timer)
                     }).mouseleave(function () {
                         timer = setInterval(function () {
-                            _this.move()
-                        }, 1000)
+                            _this.toMove(_this.option.direction * 1)
+                        }, _this.option.interval)
                     });
                 },
-                move: function () {
-                    var n = this.option.direction * 1;
-                    var len = this.imgs.length;
-                    if (this.index >= len - 1) {
-                        this.dots.eq(0).addClass('active').siblings().removeClass('active');
-                    }
-                    if (this.index == this.imgs.length - 1) {
-                        this.imgsWrap.css({'left': 0});
-                        this.index = 0;
-                        this.animate(n)
-                    } else {
-                        this.animate(n)
-                    }
-                },
-                animate:function (n) {
+                //向哪个方向移动
+                toMove: function (n) {
                     if(n * 1 <= -1){
                         this.index ++;
                     }else if(n * 1 >= 1){
                         this.index --;
                     }
+                    this.move(n)
+
+                },
+                //移动边界处理
+                move:function (n) {
+                    var _this = this;
+                    var len = this.imgs.length;
+                    if (this.index >= len - 1) {
+                        this.dots.eq(0).addClass('active').siblings().removeClass('active');
+                        if (this.index >= this.imgs.length - 1) {
+                            this.imgsWrap.css({'left': 0});
+                            this.index = 0;
+                            this.animate(n)
+                        }
+                    }else if(this.index < 0){
+                        this.index = len - 1;
+                        this.imgsWrap.css({'left': -(len-1) * this.imgW + 'px'});
+                        if(n*1>=1){
+                            this.index--
+                        }
+                        this.animate()
+                    }else{
+                        this.animate();
+                    }
+
+                },
+                //移动动画
+                animate:function(){
                     this.dots.eq(this.index).addClass('active').siblings().removeClass('active');
-                    this.imgsWrap.stop().animate({'left': n * this.index * this.imgW + 'px'}, 1000);
+                    this.imgsWrap.stop().animate({'left':  - this.index * this.imgW + 'px'}, this.option.animateTime);
                 }
+
 
             });
             return new CarouselObj(option);
