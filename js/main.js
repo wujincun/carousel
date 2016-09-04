@@ -89,15 +89,11 @@
                 },
                 move: function () {
                     var n = this.option.direction * 1;
-                   /* if(this.done){
-                        this.index++;
-                        this.done = false
-                    }*/
                     var len = this.imgs.length;
                     if (this.index >= len - 1) {
                         this.dots.eq(0).addClass('active').siblings().removeClass('active');
                     }
-                    if (this.index == this.imgs.length) {
+                    if (this.index == this.imgs.length - 1) {
                         this.imgsWrap.css({'left': 0});
                         this.index = 0;
                         this.animate(n)
@@ -106,11 +102,13 @@
                     }
                 },
                 animate:function (n) {
-                    var _this = this;
+                    if(n * 1 <= -1){
+                        this.index ++;
+                    }else if(n * 1 >= 1){
+                        this.index --;
+                    }
                     this.dots.eq(this.index).addClass('active').siblings().removeClass('active');
-                    this.imgsWrap.stop().animate({'left': n * this.index * this.imgW + 'px'}, 1000,function () {
-                        _this.done = true
-                    });
+                    this.imgsWrap.stop().animate({'left': n * this.index * this.imgW + 'px'}, 1000);
                 }
 
             });
