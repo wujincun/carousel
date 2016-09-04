@@ -9,7 +9,6 @@
                 this.render();
                 this.bind()
             }
-
             $.extend(CarouselObj.prototype, {
                 init: function (option) {
                     var opt = {
@@ -20,7 +19,7 @@
                         toLeftBtn: $('.left_btn'),
                         toRightBtn: $('.right_btn'),
                         hasNoGap: true,
-                        direction: 1,
+                        direction: -1,
                         interval: 2000,
                         animateTime: 1000
                     };
@@ -36,7 +35,7 @@
 
                     this.index = this.option.index;
                     this.timer = null;
-                    this.done = false;
+                    this.done = true;
                 },
                 render: function () {
                     var _this = this;
@@ -71,10 +70,14 @@
                 bind: function () {
                     var _this = this;
                     this.toLeftBtn.on('click', function () {
-                        _this.toMove(1)
+                        if(_this.done){
+                            _this.toMove(1)
+                        }
                     });
                     this.toRightBtn.on('click', function () {
-                        _this.toMove(-1)
+                        if(_this.done){
+                            _this.toMove(-1)
+                        }
                     });
                     this.stage.mouseenter(function () {
                         clearInterval(timer)
@@ -92,40 +95,38 @@
                         this.index --;
                     }
                     this.move(n)
-
                 },
                 //移动边界处理
                 move:function (n) {
                     var len = this.imgs.length;
                     if (this.index >= len - 1) {
                         this.dots.eq(0).addClass('active').siblings().removeClass('active');
-                        if (this.index >= this.imgs.length - 1) {
+                        this.animate();
+                        if (this.index >= len) {
                             this.imgsWrap.css({'left': 0});
-                            this.index = 0;
-                            this.animate(n)
+                            this.index = 1;
                         }
-                    }else if(this.index < 0){
+                    }else if(this.index < 0) {
                         this.index = len - 1;
-                        this.imgsWrap.css({'left': -(len-1) * this.imgW + 'px'});
-                        if(n*1>=1){
+                        this.imgsWrap.css({'left': -(len - 1) * this.imgW + 'px'});
+                        if (n * 1 >= 1) {
                             this.index--
                         }
-                        this.animate()
-                    }else{
-                        this.animate();
                     }
-
+                    this.animate();
                 },
                 //移动动画
                 animate:function(){
+                    var _this = this;
                     this.dots.eq(this.index).addClass('active').siblings().removeClass('active');
-                    this.imgsWrap.stop().animate({'left':  - this.index * this.imgW + 'px'}, this.option.animateTime);
+                    _this.done = false;
+                    this.imgsWrap.stop().animate({'left':  - this.index * this.imgW + 'px'}, this.option.animateTime,function(){
+                        _this.done = true
+                    });
                 }
             });
             return new CarouselObj(option);
         }
-
     });
-
 })(jQuery);
 $.carousel({});
